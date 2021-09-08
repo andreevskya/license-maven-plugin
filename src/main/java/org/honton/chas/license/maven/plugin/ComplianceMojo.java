@@ -16,6 +16,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
 import org.honton.chas.license.maven.plugin.compliance.LicenseMatcher;
@@ -148,7 +149,9 @@ public class ComplianceMojo extends AbstractMojo {
     Artifact artifact =
         repository.createProjectArtifact(d.getGroupId(), d.getArtifactId(), d.getVersion());
     try {
-      return projectBuilder.build(artifact, session.getProjectBuildingRequest()).getProject();
+      ProjectBuildingRequest request = session.getProjectBuildingRequest();
+      request.setRemoteRepositories(project.getRemoteArtifactRepositories());
+      return projectBuilder.build(artifact, request).getProject();
     } catch (ProjectBuildingException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
